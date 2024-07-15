@@ -1,27 +1,29 @@
 import { throttle } from "./throttle";
 
-import * as _ from 'lodash';
-
 jest.useFakeTimers();
 
-describe('debounce', () => {
+describe('throttle', () => {
+    it('should call the function immediately', () => {
+        const func = jest.fn();
+        const throttledFunc = throttle(func, 1000);
 
-    let func: jest.Mock;
-    let debouncedFunc: Function;
-
-    beforeEach(() => {
-        func = jest.fn();
-        debouncedFunc = _.debounce(func, 1000);
-    });
-
-    test('execute just once', () => {
-        for (let i = 0; i < 100; i++) {
-            debouncedFunc();
-        }
-
-        // Fast-forward time
-        jest.runAllTimers();
+        throttledFunc();
 
         expect(func).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throttle function calls', () => {
+        const func = jest.fn();
+        const throttledFunc = throttle(func, 1000);
+
+        throttledFunc();
+        throttledFunc();
+        throttledFunc();
+
+        expect(func).toHaveBeenCalledTimes(1);
+
+        jest.advanceTimersByTime(1000);
+
+        expect(func).toHaveBeenCalledTimes(2);
     });
 });
